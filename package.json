@@ -1,0 +1,23 @@
+{
+  "name": "student-meeting-scheduler",
+  "version": "1.0.0",
+  "description": "CSE 448 Senior Project",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nongtm/student-meeting-scheduler.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nongtm/student-meeting-scheduler/issues"
+  },
+  "homepage": "https://github.com/nongtm/student-meeting-scheduler#readme",
+  "dependencies": {
+    "express": "^4.16.2"
+  }
+}

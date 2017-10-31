@@ -10,7 +10,172 @@
         <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>         
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>      
+
+        <script>
+            var hours = {
+                8: {
+                    monday: true,
+                    tuesday: true,
+                    wednesday: true,
+                    thursday: true,
+                    friday: true,
+                },
+                9: {
+                    monday: true,
+                    tuesday: true,
+                    wednesday: true,
+                    thursday: true,
+                    friday: true,
+                },
+                10: {
+                    monday: true,
+                    tuesday: true,
+                    wednesday: true,
+                    thursday: true,
+                    friday: true,
+                },
+                11: {
+                    monday: true,
+                    tuesday: true,
+                    wednesday: true,
+                    thursday: true,
+                    friday: true,
+                },
+                12: {
+                    monday: true,
+                    tuesday: true,
+                    wednesday: true,
+                    thursday: true,
+                    friday: true,
+                },
+                13: {
+                    monday: true,
+                    tuesday: true,
+                    wednesday: true,
+                    thursday: true,
+                    friday: true,
+                },
+                14: {
+                    monday: true,
+                    tuesday: true,
+                    wednesday: true,
+                    thursday: true,
+                    friday: true,
+                },
+                15: {
+                    monday: true,
+                    tuesday: true,
+                    wednesday: true,
+                    thursday: true,
+                    friday: true,
+                },
+                16: {
+                    monday: true,
+                    tuesday: true,
+                    wednesday: true,
+                    thursday: true,
+                    friday: true,
+                }
+            }
+            var students = [
+              {
+                id: 1,
+                bannerid: "12345678",
+                first_name: "Rodolphe",
+                last_name: "Peddie",
+                email: "peddier@miamioh.edu",
+                classes: [
+                    {
+                        id: "CSE 201",
+                        time: {
+                            monday: {
+                                start: 13,
+                                end: 14
+                            },
+                            wednesday: {
+                                start: 13,
+                                end: 14
+                            },
+                            friday: {
+                                start: 13,
+                                end: 14
+                            },
+                        }
+                    },
+                    {
+                        id: "MTH 151",
+                        time: {
+                            tuesday: {
+                                start: 8,
+                                end: 10
+                            },
+                            thursday: {
+                                start: 8,
+                                end: 10
+                            }
+                        }
+                    }
+                ]
+              },
+              {
+                id: 2,
+                bannerid: "87654321",
+                first_name: "Nikola",
+                last_name: "Embra",
+                email: "embran@miamioh.edu",
+                classes: [
+                    {
+                        id: "CSE 102",
+                        time: {
+                            tuesday: {
+                                start: 10,
+                                end: 12
+                            },
+                            thursday: {
+                                start: 10,
+                                end: 12
+                            },
+                        }
+                    },
+                    {
+                        id: "PHY 191",
+                        time: {
+                            wednesday: {
+                                start: 14,
+                                end: 17
+                            },
+                            friday: {
+                                start: 14,
+                                end: 17
+                            }
+                        }
+                    }
+                ]
+              },
+              {
+                id: 3,
+                bannerid: "97654321",
+                first_name: "Saunders",
+                last_name: "Legan",
+                email: "legans@miamioh.edu"
+              },
+              {
+                id: 4,
+                bannerid: "5214863",
+                first_name: "Pepe",
+                last_name: "Niemiec",
+                email: "niemiecp@miamioh.edu"
+              },
+              {
+                id: 5,
+                bannerid: "94587213",
+                first_name: "Pierre",
+                last_name: "Grabham",
+                email: "grabhamp@miamioh.edu"
+              }
+            ]
+        </script>   
         
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta charset="UTF-8">        
@@ -24,10 +189,11 @@
             <div class="main-app">
                 <div>
                     <p>Enter student banner ID: </p>
-                    <input class="id-form" type="text" class="form-control">
+                    <input id="bannerid" type="text" class="form-control">
+                    <button onClick="getSchedule()">Submit</button>
                 </div>
                 <div class="schedule-table">
-                    <table class="table table-bordered">
+                    <table class="table table-bordered table-striped">
                         <thead class="thead-default">
                             <tr>
                                 <th>Time</th>
@@ -38,83 +204,99 @@
                                 <th>Friday</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <th scope="row">8:00 a.m - 9:00 a.m.</th>
-                                <td></td>
-                                <td></td>
-                                <td class="table-danger"></td>
-                                <td></td>
-                                <td class="table-danger"></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">9:00 a.m - 10:00 a.m.</th>
-                                <td class="table-danger"></td>
-                                <td></td>
-                                <td class="table-danger"></td>
-                                <td></td>
-                                <td class="table-danger"></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">10:00 a.m - 11:00 a.m.</th>
-                                <td></td>
-                                <td class="table-danger"></td>
-                                <td></td>
-                                <td class="table-danger"></td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">11:00 a.m - 12:00 p.m.</th>
-                                <td></td>
-                                <td class="table-danger"></td>
-                                <td></td>
-                                <td class="table-danger"></td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">12:00 p.m. - 1:00 p.m.</th>
-                                <td class="table-danger"></td>
-                                <td class="table-danger"></td>
-                                <td class="table-danger"></td>
-                                <td class="table-danger"></td>
-                                <td class="table-danger"></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">1:00 p.m. - 2:00 p.m.</th>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">2:00 p.m. - 3:00 p.m.</th>
-                                <td class="table-danger"></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td class="table-danger"></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">3:00 p.m. - 4:00 p.m.</th>
-                                <td class="table-danger"></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td class="table-danger"></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">4:00 p.m. - 5:00 p.m.</th>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                            </tr>
+                        <tbody class="table-body">
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
     </body>
+
+    <script>
+        //var minutes = ['00', '30'];
+        // for(var hour = 8; hour<=16; hour++){
+        //     $(".table-body").append("\
+        //         <tr>\
+        //             <th scope='row'>"+hour+":00 - "+(hour+1)+":00</th>\                               
+        //             <td id='m"+hour+"'></td>\
+        //             <td id='t"+hour+"'></td>\
+        //             <td id='w"+hour+"'></td>\
+        //             <td id='tr"+hour+"'></td>\
+        //             <td id='f"+hour+"'></td>\
+        //         </tr>\
+        //     ")
+        //     // for(var i in minutes){
+        //     //     if(i == 0) var thead = "<th scope='row'>"+hour+":"+minutes[0]+" - "+hour+":"+minutes[1]+"</th>";
+        //     //     else var thead = "<th scope='row'>"+hour+":"+minutes[1]+" - "+ (hour + 1) +":"+minutes[0]+"</th>";
+
+        //     //     $(".table-body").append("\
+        //     //             <tr>" + thead +                                
+        //     //                 "<td id='m"+hour+minutes[i]+"'></td>\
+        //     //                 <td id='t"+hour+minutes[i]+"'></td>\
+        //     //                 <td id='w"+hour+minutes[i]+"'></td>\
+        //     //                 <td id='tr"+hour+minutes[i]+"'></td>\
+        //     //                 <td id='f"+hour+minutes[i]+"'></td>\
+        //     //             </tr>\
+        //     //         ")
+        //     // }
+        // }
+
+        updateTable();
+
+        function getSchedule(){
+            var bannerid = $("#bannerid").val();
+            var found = false; 
+            for(var index in students){
+                var student = students[index];
+                if(student.bannerid == bannerid){
+                    found = true;
+                    if(student.classes){
+                        student.classes.forEach(function(theirClass){
+                            for(var day in theirClass.time){
+                                var start = theirClass.time[day].start;
+                                var end = theirClass.time[day].end;
+
+                                //update hours object
+                                for(var i = start; i < end; i++){
+                                    hours[i][day] = false;
+                                }
+                            }
+                        })
+                    }
+                    break;
+                }
+            }
+            if(!found) alert("No student found!")
+            updateTable();
+        }
+
+        function updateTable(){
+            //Re draw the table;
+            console.log("Updated!");
+            $(".table-body").html("");
+            for(var hour in hours){
+                $(".table-body").append(`
+                    <tr>
+                        <th scope='row'>`+hour+`:00 - `+(parseInt(hour)+1)+`:00</th>                             
+                        <td id='m`+hour+`'></td>
+                        <td id='t`+hour+`'></td>
+                        <td id='w`+hour+`'></td>
+                        <td id='tr`+hour+`'></td>
+                        <td id='f`+hour+`'></td>
+                    </tr>
+                `)
+                for(var day in hours[hour]){
+                    //Fill the cell with red color
+                    if(hours[hour][day] == false){
+                        if(day == 'monday') $("#m"+hour).addClass("table-danger");
+                        if(day == 'tuesday') $("#t"+hour).addClass("table-danger");
+                        if(day == 'wednesday') $("#w"+hour).addClass("table-danger");
+                        if(day == 'thursday') $("#tr"+hour).addClass("table-danger");
+                        if(day == 'friday') $("#f"+hour).addClass("table-danger");
+                    }
+                }
+            }
+        }
+
+    </script>
 </html>

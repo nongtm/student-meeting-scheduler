@@ -12,6 +12,8 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>      
 
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css"> 
+
         <script>
             var hours = {
                 8: {
@@ -82,9 +84,10 @@
               {
                 id: 1,
                 bannerid: "12345678",
-                first_name: "Rodolphe",
-                last_name: "Peddie",
-                email: "peddier@miamioh.edu",
+                uniqueid: "nongtm",
+                first_name: "Tri",
+                last_name: "Nong",
+                email: "nongtm@miamioh.edu",
                 classes: [
                     {
                         id: "CSE 201",
@@ -121,9 +124,10 @@
               {
                 id: 2,
                 bannerid: "87654321",
-                first_name: "Nikola",
-                last_name: "Embra",
-                email: "embran@miamioh.edu",
+                uniqueid: "daveyla",
+                first_name: "Logan",
+                last_name: "Davey",
+                email: "daveyla@miamioh.edu",
                 classes: [
                     {
                         id: "CSE 102",
@@ -156,6 +160,7 @@
               {
                 id: 3,
                 bannerid: "97654321",
+                uniqueid: "legans",
                 first_name: "Saunders",
                 last_name: "Legan",
                 email: "legans@miamioh.edu"
@@ -163,6 +168,7 @@
               {
                 id: 4,
                 bannerid: "5214863",
+                uniqueid: "niemiecp",
                 first_name: "Pepe",
                 last_name: "Niemiec",
                 email: "niemiecp@miamioh.edu"
@@ -170,43 +176,54 @@
               {
                 id: 5,
                 bannerid: "94587213",
+                uniqueid: "grabhamp",
                 first_name: "Pierre",
                 last_name: "Grabham",
                 email: "grabhamp@miamioh.edu"
               }
             ]
+            var chosen = false;
+            var studentList = [];
         </script>   
         
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta charset="UTF-8">        
     </head>
-    <body>
-        <div class="header">
-            <img src="../images/miami-logo.jpg" style="text-align: left; margin-left: 10px" />
+    <body>        
+        <!-- Sidebar -->           
+        <div id="studentList" class="w3-sidebar w3-light-grey w3-bar-block" style="width:20%" >
+          <h3 class="w3-bar-item" style="background-color: #ba2e31; margin: 0; font-weight: bold">Students</h3>
         </div>
-        <div class="body">
-            <h1 style="text-align:center">Student Meeting Scheduler App</h1>
-            <div class="main-app">
-                <div>
-                    <p>Enter student banner ID: </p>
-                    <input id="bannerid" type="text" class="form-control">
-                    <button onClick="getSchedule()">Submit</button>
-                </div>
-                <div class="schedule-table">
-                    <table class="table table-bordered table-striped">
-                        <thead class="thead-default">
-                            <tr>
-                                <th>Time</th>
-                                <th>Monday</th>
-                                <th>Tuesday</th>
-                                <th>Wednesday</th>
-                                <th>Thursday</th>
-                                <th>Friday</th>
-                            </tr>
-                        </thead>
-                        <tbody class="table-body">
-                        </tbody>
-                    </table>
+
+        <div style="margin-left:20%; padding: 50px">
+            <div class="header">
+                <img src="../images/miami-logo.jpg" style="margin-left: 10px; text-align: right" />
+            </div>
+            <br/>
+            <div class="body">
+                <h1 style="text-align:center">Student Meeting Scheduler App</h1>
+                <div class="main-app">
+                    <div>
+                        <p>Enter student uniqueid: </p>
+                        <input id="uniqueid" type="text" class="form-control">
+                        <button onClick="getSchedule()">Submit</button>
+                    </div>
+                    <div class="schedule-table">
+                        <table class="table table-bordered table-striped">
+                            <thead class="thead-default">
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Monday</th>
+                                    <th>Tuesday</th>
+                                    <th>Wednesday</th>
+                                    <th>Thursday</th>
+                                    <th>Friday</th>
+                                </tr>
+                            </thead>
+                            <tbody class="table-body">
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -244,25 +261,44 @@
         updateTable();
 
         function getSchedule(){
-            var bannerid = $("#bannerid").val();
+            var uniqueid = $("#uniqueid").val();
             var found = false; 
             for(var index in students){
                 var student = students[index];
-                if(student.bannerid == bannerid){
+                if(student.uniqueid == uniqueid){
                     found = true;
-                    if(student.classes){
-                        student.classes.forEach(function(theirClass){
-                            for(var day in theirClass.time){
-                                var start = theirClass.time[day].start;
-                                var end = theirClass.time[day].end;
+                    if(studentList.indexOf(uniqueid) == -1){
+	                    $("#studentList").append(`
+	                    	<div id="`+student.uniqueid+`">
+		                        <button class="w3-button w3-block w3-left-align" onclick="myAccFunc('`+student.uniqueid+`')">`+student.first_name + ` ` + student.last_name +`</button>
+		                        <div id="`+student.uniqueid+`-acc" class="w3-bar-block w3-hide w3-white w3-card-4">
+		                            <div id="monday-acc">Monday</div>
+		                            <div id="tuesday-acc">Tuesday</div>
+		                            <div id="wednesday-acc">Wednesday</div>
+		                            <div id="thursday-acc">Thursday</div>
+		                            <div id="friday-acc">Friday</div>
+		                            <button onclick="remove('`+student.uniqueid+`')">Remove</button>
+		                        </div>   
+		                     </div>
+	                    `)
 
-                                //update hours object
-                                for(var i = start; i < end; i++){
-                                    hours[i][day] = false;
-                                }
-                            }
-                        })
-                    }
+	                    if(student.classes){
+	                        student.classes.forEach(function(theirClass){
+	                            for(var day in theirClass.time){
+	                                var start = theirClass.time[day].start;
+	                                var end = theirClass.time[day].end;
+	                                $("#"+student.uniqueid + "-acc > #" + day + "-acc").append("<p>"+start+":00 - "+end+":00</p>");
+	                                //update hours object
+	                                for(var i = start; i < end; i++){                                    
+	                                    hours[i][day] = false;
+	                                }
+	                            }
+	                        })
+	                    }
+
+	                    studentList.push(student.uniqueid);
+	                }
+                    
                     break;
                 }
             }
@@ -278,7 +314,7 @@
                 $(".table-body").append(`
                     <tr>
                         <th scope='row'>`+hour+`:00 - `+(parseInt(hour)+1)+`:00</th>                             
-                        <td id='m`+hour+`'></td>
+                        <td id='m`+hour+` onClick="choose'></td>
                         <td id='t`+hour+`'></td>
                         <td id='w`+hour+`'></td>
                         <td id='tr`+hour+`'></td>
@@ -295,6 +331,60 @@
                         if(day == 'friday') $("#f"+hour).addClass("table-danger");
                     }
                 }
+            }
+            $("tr").on("click", "td", function(){
+	        	console.log($(this).attr('class'));
+	        	if($(this).attr('class') == "table-danger"){
+	        		
+	        	}
+	        	else if ($(this).attr('class') == "table-success"){
+	        		$(this).removeClass("table-success");
+	        		chosen = false;
+	        	}
+	        	else{
+	        		if(!chosen){
+	        			$(this).addClass("table-success");
+	        			chosen = true;
+	        		} 
+	        		else alert("You can only choose one time slot!")
+	        	} 
+
+	        	var cellId = $(this).attr('id');
+	        })
+        }
+
+        function remove(uniqueid){
+        	$("#"+uniqueid).remove();
+        	var ind = studentList.indexOf(uniqueid);
+        	studentList.splice(ind, 1);
+        	for(var index in students){
+                var student = students[index];
+                if(student.uniqueid == uniqueid){
+                	student.classes.forEach(function(theirClass){
+                        for(var day in theirClass.time){
+                            var start = theirClass.time[day].start;
+                            var end = theirClass.time[day].end;
+                            //update hours object
+                            for(var i = start; i < end; i++){                                    
+                                hours[i][day] = true;
+                            }
+                        }
+                    })
+                	break;
+                }
+            }
+            updateTable();
+        }
+
+        function myAccFunc(uniqueid) {
+            var x = document.getElementById(uniqueid + "-acc");
+            if (x.className.indexOf("w3-show") == -1) {
+                x.className += " w3-show";
+                x.previousElementSibling.className += " w3-green";
+            } else { 
+                x.className = x.className.replace(" w3-show", "");
+                x.previousElementSibling.className = 
+                x.previousElementSibling.className.replace(" w3-green", "");
             }
         }
 

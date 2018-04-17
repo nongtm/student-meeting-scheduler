@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Google Calendar API Quickstart</title>
+    <meta charset='utf-8' />
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.css' />
+    <!-- <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.print.css' /> -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+	<script src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.1/moment.min.js'></script>
+	<script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.js'></script>
+  </head>
+  <body>
+    <p>Google Calendar API Quickstart</p>
+
+    <!--Add buttons to initiate auth sequence and sign out-->
+    <button id="authorize-button" style="display: none;">Authorize</button>
+    <button id="signout-button" style="display: none;">Sign Out</button>
+
+    <div>
+        <p>Enter student uniqueid: </p>
+        <input id="uniqueid" type="text" class="form-control">
+        <button onClick="getSchedule()">Submit</button>
+    </div>
+
+    <pre id="content"></pre>
+
+    <div id='calendar'></div>
+
+    <script>
+    	function getSchedule() {
+    		var uniqueid = $("#uniqueid").val();
+
+    		if($('#calendar').fullCalendar('getEventSourceById', uniqueid)){
+    			alert("This student's schedule is already in the calendar!");
+    		}
+    		else{
+    			var access_token =  gapi.auth.getToken().access_token;
+				var request = gapi.client.request({
+				   'path': '/calendar/v3/freeBusy',
+				   'method': 'POST',
+				   'headers': {
+					   'Content-Type': 'application/json',
+					   'Authorization': 'Bearer ' + access_token,             
+				   },
+				   'body':{
+					   "items": [
+								    {
+								      "id": uniqueid+"@miamioh.edu"
+								    }
+								],
+								"timeMin": (new Date()).toISOString(),
+								"timeMax": "2018-04-30T12:15:00-04:00"
+				   }
+				});
+				request.execute(function(resp) { 
+				   if (!resp.error) {
+						var events = resp.calendars[uniqueid+'@miamioh.edu'].busy.map(function(event){
+							event.title = uniqueid;
+							return event; 
+						})
+						console.log(events);
+						if(events.length > 0){
+							var eventSource = {
+								id: uniqueid,
+								events: events,
+								color: '#000' 
+							}
+							$('#calendar').fullCalendar('addEventSource', eventSource);
+						}						
+				   }else{
+						appendPre("Error: " + resp.error.message);
+				   }
+				});
+    		}
+    		
+    	}
+    	$(document).ready(function() {
+		  // page is ready
+		  $('#calendar').fullCalendar({
+		      // calendar properties
+		      header: {
+		      	left: 'prev,next today',
+		        center: 'title',
+		        right: 'month,agendaWeek,agendaDay,listWeek'
+		      },
+		      timezone: "local",
+		      navLinks: true, // can click day/week names to navigate views
+		      eventLimit: true, // allow "more" link when too many events
+		      selectable: true,
+		      selectHelper: true,
+		      selectOverlap: false,
+		      select: function(startDate, endDate) {
+	        	alert('selected ' + startDate.format() + ' to ' + endDate.format());
+		      }
+		  })
+		});
+	</script>
+
+    <script type="text/javascript">
+      // Client ID and API key from the Developer Console
+      var CLIENT_ID = '1002154643494-imreglclqb5fjrobontuhnkltmcqvi3r.apps.googleusercontent.com';
+      var API_KEY = 'AIzaSyA_TbJ7SOHLhTp8wUnl_Mhz4Pd6gsdHcuw';
+
+      // Array of API discovery doc URLs for APIs used by the quickstart
+      var DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"];
+
+      // Authorization scopes required by the API; multiple scopes can be
+      // included, separated by spaces.
+      var SCOPES = "https://www.googleapis.com/auth/calendar.readonly";
+
+      var authorizeButton = document.getElementById('authorize-button');
+      var signoutButton = document.getElementById('signout-button');
+
+      /**
+       *  On load, called to load the auth2 library and API client library.
+       */
+      function handleClientLoad() {
+        gapi.load('client:auth2', initClient);
+      }
+
+      /**
+       *  Initializes the API client library and sets up sign-in state
+       *  listeners.
+       */
+      function initClient() {
+        gapi.client.init({
+          apiKey: API_KEY,
+          clientId: CLIENT_ID,
+          discoveryDocs: DISCOVERY_DOCS,
+          scope: SCOPES
+        }).then(function () {
+          // Listen for sign-in state changes.
+          gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
+
+          // Handle the initial sign-in state.
+          updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
+          authorizeButton.onclick = handleAuthClick;
+          signoutButton.onclick = handleSignoutClick;
+        }, function(error) {
+		  console.log(error);
+		});
+      }
+
+      /**
+       *  Called when the signed in status changes, to update the UI
+       *  appropriately. After a sign-in, the API is called.
+       */
+      function updateSigninStatus(isSignedIn) {
+        if (isSignedIn) {
+          authorizeButton.style.display = 'none';
+          signoutButton.style.display = 'block';
+          listUpcomingEvents();
+        } else {
+          authorizeButton.style.display = 'block';
+          signoutButton.style.display = 'none';
+        }
+      }
+
+      /**
+       *  Sign in the user upon button click.
+       */
+      function handleAuthClick(event) {
+        gapi.auth2.getAuthInstance().signIn();
+      }
+
+      /**
+       *  Sign out the user upon button click.
+       */
+      function handleSignoutClick(event) {
+        gapi.auth2.getAuthInstance().signOut();
+      }
+
+      /**
+       * Append a pre element to the body containing the given message
+       * as its text node. Used to display the results of the API call.
+       *
+       * @param {string} message Text to be placed in pre element.
+       */
+      function appendPre(message) {
+        var pre = document.getElementById('content');
+        var textContent = document.createTextNode(message + '\n');
+        pre.appendChild(textContent);
+      }
+
+      /**
+       * Print the summary and start datetime/date of the next ten events in
+       * the authorized user's calendar. If no events are found an
+       * appropriate message is printed.
+       */
+      function listUpcomingEvents() {
+        gapi.client.calendar.events.list({
+          'calendarId': 'primary',
+          'timeMin': (new Date()).toISOString(),
+          'showDeleted': false,
+          'singleEvents': true,
+          'maxResults': 10,
+          'orderBy': 'startTime'
+        }).then(function(response) {
+          var events = response.result.items;
+          console.log(events);
+          // appendPre('Upcoming events:');
+
+          // if (events.length > 0) {
+          //   for (i = 0; i < events.length; i++) {
+          //     var event = events[i];
+          //     var when = event.start.dateTime;
+          //     if (!when) {
+          //       when = event.start.date;
+          //     }
+          //     appendPre(event.summary + ' (' + when + ')')
+
+          //     var start = event.start.dateTime;
+          //     var end = event.end.dateTime;
+
+
+          //   }
+          // } else {
+          //   appendPre('No upcoming events found.');
+          // }
+
+          events = events.map(function(event) {
+          	var result = {};
+          	result.title = event.summary;
+          	result.start = event.start.dateTime;
+          	result.end = event.end.dateTime;
+          	return result;
+          })
+          console.log(events);
+          $('#calendar').fullCalendar('addEventSource', events);
+        });        
+      }
+
+      var d = new Date();
+	var date = d.toISOString();
+	console.log(date);
+
+    </script>
+
+    <script async defer src="https://apis.google.com/js/api.js"
+      onload="this.onload=function(){};handleClientLoad()"
+      onreadystatechange="if (this.readyState === 'complete') this.onload()">
+    </script>
+  </body>
+</html>

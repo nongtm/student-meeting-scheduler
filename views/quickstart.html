@@ -28,11 +28,18 @@
   <body>
   	<!-- Sidebar -->           
     <div id="studentList" class="w3-sidebar w3-light-grey w3-bar-block" style="width:20%" >
-      <h3 class="w3-bar-item" style="background-color: #ba2e31; text-align: center; margin: 0; font-weight: bold">Display Students</h3>
+      <h3 class="w3-bar-item" style="background-color: #ba2e31; text-align: center; margin: 0; font-weight: bold; color: white">Students</h3>
        <div>
-            <p>Enter student uniqueid: </p>
-            <input id="uniqueid" type="text" class="form-control">
+       		<form class="ui form">
+			    	<div class="field">
+				    	<label>Enter student uniqueid:</label>
+				    	<input type="text" id="uniqueid">
+			    	</div>
+		   	</form>
+            <!-- <p>Enter student uniqueid: </p>
+            <input id="uniqueid" type="text" class="form-control"> -->
             <button onClick="getSchedule()">Submit</button>
+			<div class="ui accordion" ></div>
         </div>
     </div>
 
@@ -42,23 +49,37 @@
         </div>
         <br/>
         <div class="body">
-            <h1 style="text-align:center">Student Meeting Scheduler App</h1>
+            <h1 style="text-align:center">Student Meeting Scheduler</h1>
 
+            <p class="message" style="display: none">Welcome! Please login to use the app</p>
     		<!--Add buttons to initiate auth sequence and sign out-->
-		    <button id="authorize-button" style="display: none;">Authorize</button>
+		    <button id="authorize-button" style="display: none;">Login with Google</button>
 		    <button id="signout-button" style="display: none;">Sign Out</button>
 
-		    <p>Pick a date: <input type="text" id="datepicker"></p>
-		    <p>Pick a time:
-		    	<span>From: <input id="start-time"> To: <input id="end-time"></span></p>
-		    <p>Title: <input type="text" id="title"></p>
-		    <p>Description: <textarea id="description" row="5" col="50"></textarea></p>
-		   	<p>Location: <input type="text" id="location"></p>
-
-		    <button onClick="createCalendarEvent()">Create</button>
-            <div class="main-app">               
-                <div id='calendar'></div>
-            </div>
+		    <div class="content" style="display: none">
+			    <!-- <p>Pick a date: <input type="text" id="datepicker"></p>
+			    <p>Pick a time:
+			    	<span>From: <input id="start-time"> To: <input id="end-time"></span></p> -->
+			    <p style="margin-top: 15px; font-weight: bold">Please select a time slot using the calendar below</p>
+			    <form class="ui form">
+			    	<div class="field">
+				    	<label>Title</label>
+				    	<input type="text" id="title">
+			    	</div>
+			    	<div class="field">
+				    	<label>Description</label>
+				    	<textarea id="description"></textarea>
+			    	</div>
+			    	<div class="field">
+				    	<label>Location</label>				    	
+				    	<input type="text" id="location">
+			    	</div>
+	    			<button class="ui button" onClick="createCalendarEvent()" type="submit">Create Event</button>
+	    		</form>
+	            <div class="main-app" style="margin-top: 5%">               
+	                <div id='calendar'></div>
+	            </div>
+	        </div>
         </div>
     </div>
 
@@ -99,6 +120,7 @@
     	var calendarId;
     	var selectedDate, selectedStartTime, selectedEndTime;
     	var attendees = [];
+    	var eventSource1;
 	  	$( "#datepicker" ).datepicker({
 		  	onSelect: function(date){
 		  		selectedDate = date;
@@ -167,13 +189,18 @@
 		      select: updateInput		      
 		})
 
+		// $('#calendar').fullCalendar('addEventSource', eventSource1);
+
+
 		function updateInput(startDate, endDate){
 			// alert('selected ' + startDate.format() + ' to ' + endDate.format());
-			// // selectedDate = startDate.format("mm/dd/yyyy");
+			selectedDate = startDate.format("mm/dd/yyyy");
 			// // $( "#datepicker" ).datepicker("setDate", selectedDate);
-			//  selectedStartTime = moment(startDate).format("h:mm:ss a");
-			//  selectedEndTime = moment(endDate).format("h:mm:ss a");
-			//  console.log(selectedStartTime, selectedEndTime);
+			// selectedStartTime = moment(startDate).format("h:mm:ss a");
+			// selectedEndTime = moment(endDate).format("h:mm:ss a");
+			selectedStartTime = startDate;
+			selectedEndTime = endDate;
+			console.log(selectedStartTime, selectedEndTime);
 		}
 
     	function getSchedule() {
@@ -219,16 +246,20 @@
 							}
 							$('#calendar').fullCalendar('addEventSource', eventSource);
 						}
+						// $("#studentList").append(`
+						// 	  	<div class="active title" id="`+uniqueid+`" style="color: '#fff'; background-color: `+color+`">
+						// 	    	<i class="dropdown icon"></i>
+						// 	    	`+uniqueid + ` (` + events.length + `)
+						// 	  	</div>
+						// 	  	<div class="active content">
+						// 	    	<button onclick="remove('`+uniqueid+`')">Remove</button>
+						// 	  	</div>
+						// `)		
 
 						$("#studentList").append(`
 	                    	<div id="`+uniqueid+`" style="color: '#fff'; background-color: `+color+`">
-		                        <button class="w3-button w3-block w3-left-align">`+uniqueid + ` (` + events.length + `)</button>
+		                        <button class="w3-button w3-block w3-left-align" onclick="myAccFunc('`+uniqueid+`')">`+uniqueid + ` (` + events.length + `)</button>
 		                        <div id="`+uniqueid+`-acc" class="w3-bar-block w3-hide w3-white w3-card-4">
-		                            <div id="monday-acc">Monday</div>
-		                            <div id="tuesday-acc">Tuesday</div>
-		                            <div id="wednesday-acc">Wednesday</div>
-		                            <div id="thursday-acc">Thursday</div>
-		                            <div id="friday-acc">Friday</div>
 		                            <button onclick="remove('`+uniqueid+`')">Remove</button>
 		                        </div>   
 		                     </div>
@@ -244,14 +275,14 @@
 
     	function createCalendarEvent() {
     		if(selectedDate && selectedStartTime && selectedEndTime){
-	    		var start = moment(selectedDate + " " + selectedStartTime);
-				var end = moment(selectedDate + " " + selectedEndTime);
+	   //  		var start = moment(selectedDate + " " + selectedStartTime);
+				// var end = moment(selectedDate + " " + selectedEndTime);
 	    		var event = {
 				    "start": {
-					    "dateTime": start
+					    "dateTime": selectedStartTime
 					 },
 					"end": {
-					    "dateTime": end
+					    "dateTime": selectedEndTime
 					 },
 					 "attendees": attendees,
 					 "description": $("#description").val(),
@@ -267,6 +298,7 @@
 				request.execute(function(event) {
 					console.log(event);
 				  alert('Event created: ' + event.htmlLink);
+				  windows.reload();
 				});
     		}
     		else alert("You haven't select a time!");
@@ -275,6 +307,23 @@
     	function randomColor(){
     		return '#' + (~~(Math.random() * 16777215)).toString(16);
     	}
+
+    	function myAccFunc(uniqueid) {
+            var x = document.getElementById(uniqueid + "-acc");
+            if (x.className.indexOf("w3-show") == -1) {
+                x.className += " w3-show";
+                x.previousElementSibling.className += " w3-green";
+            } else { 
+                x.className = x.className.replace(" w3-show", "");
+                x.previousElementSibling.className = 
+                x.previousElementSibling.className.replace(" w3-green", "");
+            }
+        }
+
+        function remove(uniqueid){
+        	$("#"+uniqueid).remove();       
+        	$('#calendar').fullCalendar('removeEventSource', uniqueid); 	
+        }
 	</script>
 
     <script type="text/javascript">
@@ -330,10 +379,15 @@
         if (isSignedIn) {
           authorizeButton.style.display = 'none';
           signoutButton.style.display = 'block';
+          $(".content").show();
+          $(".message").hide();
+
           listUpcomingEvents();
         } else {
           authorizeButton.style.display = 'block';
           signoutButton.style.display = 'none';
+          $(".content").hide();
+          $(".message").show();
         }
       }
 
@@ -349,24 +403,20 @@
        */
       function handleSignoutClick(event) {
         gapi.auth2.getAuthInstance().signOut();
+        $('#calendar').fullCalendar('removeEventSource', 'primary'); 
       }
 
-      /**
-       * Print the summary and start datetime/date of the next ten events in
-       * the authorized user's calendar. If no events are found an
-       * appropriate message is printed.
-       */
       function listUpcomingEvents() {
+      	// $('#calendar').fullCalendar('removeEventSource', 'primary');
         gapi.client.calendar.events.list({
           'calendarId': 'primary',
           'timeMin': (new Date()).toISOString(),
           'showDeleted': false,
           'singleEvents': true,
-          'maxResults': 10,
+          'maxResults': 30,
           'orderBy': 'startTime'
         }).then(function(response) {
           var events = response.result.items;
-          console.log(events);
 
           events = events.map(function(event) {
           	var result = {};
@@ -376,7 +426,16 @@
           	return result;
           })
           console.log(events);
-          $('#calendar').fullCalendar('addEventSource', events);
+
+
+          var eventSource = {
+								id: 'primary',
+								events: events
+							}
+			console.log(eventSource)
+			eventSource1 = eventSource
+
+          $('#calendar').fullCalendar('addEventSource', eventSource);
         });        
       }
     </script>
